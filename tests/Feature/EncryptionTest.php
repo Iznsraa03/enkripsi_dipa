@@ -162,4 +162,90 @@ class EncryptionTest extends TestCase
 
         $this->encryptionService->decrypt('bukan-json-valid');
     }
+
+    /** Test 10: PIN disimpan terenkripsi di database dan otomatis didekripsi. */
+    public function test_user_pin_is_stored_encrypted_in_database(): void
+    {
+        $user = User::factory()->create([
+            'nim'      => '221043',
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+            'pin'      => '123456',
+        ]);
+
+        // Verifikasi raw database tidak memiliki PIN bernilai plaintext
+        $rawUser = \Illuminate\Support\Facades\DB::table('users')->where('id', $user->id)->first();
+        $this->assertNotEquals('123456', $rawUser->pin);
+        $this->assertStringContainsString('"iv"', $rawUser->pin);
+
+        // Verifikasi model Eloquent mendekripsi secara otomatis
+        $loadedUser = User::find($user->id);
+        $this->assertEquals('123456', $loadedUser->pin);
+    }
+
+    /** Test 11: Endpoint verifikasi PIN merespon dengan benar. */
+    public function test_pin_verification_endpoints(): void
+    {
+        $user = User::factory()->create([
+            'nim'      => '221043',
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+            'pin'      => '123456',
+            'role'     => 'mahasiswa',
+        ]);
+
+        // Belum login - dialihkan
+        $response = $this->postJson(route('transcript.verify-pin'), ['pin' => '123456']);
+        $response->assertStatus(401); // Unauthorized (karena route diproteksi middleware auth.mahasiswa)
+
+        // Login
+        $this->actingAs($user);
+
+        // PIN salah
+        $response = $this->postJson(route('transcript.verify-pin'), ['pin' => '999999']);
+        $response->assertStatus(422);
+        $response->assertJsonPath('success', false);
+
+        // PIN benar
+        $response = $this->postJson(route('transcript.verify-pin'), ['pin' => '123456']);
+        $response->assertOk();
+        $response->assertJsonPath('success', true);
+    }
+
+    /** Test 12: Download transkrip hanya dapat diakses jika PIN terverifikasi. */
+    public function test_transcript_download_requires_pin_verification(): void
+    {
+        $user = User::factory()->create([
+            'nim'      => '221043',
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+            'pin'      => '123456',
+            'role'     => 'mahasiswa',
+        ]);
+
+        // Hubungkan profile mahasiswa
+        Mahasiswa::create([
+            'user_id'       => $user->id,
+            'nama'          => 'Najwa Rizqiyah',
+            'email'         => 'najwa@student.ac.id',
+            'alamat'        => 'Bandung',
+            'nomor_telepon' => '0812345',
+            'program_studi' => 'Informatika',
+            'semester'      => 7,
+            'angkatan'      => '2022',
+        ]);
+
+        $this->actingAs($user);
+
+        // Langsung coba unduh tanpa verifikasi PIN - dialihkan
+        $response = $this->get(route('transcript.download'));
+        $response->assertRedirect(route('transcript'));
+        $this->assertTrue(session()->has('errors'));
+
+        // Jalankan verifikasi PIN sukses
+        $this->postJson(route('transcript.verify-pin'), ['pin' => '123456'])->assertOk();
+
+        // Coba unduh kembali - harus sukses dan mengembalikan file HTML
+        $response = $this->get(route('transcript.download'));
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Disposition', 'attachment; filename="Transkrip_Resmi_Najwa_Rizqiyah_221043.html"');
+    }
 }

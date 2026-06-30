@@ -29,11 +29,13 @@ final class User extends Authenticatable
     protected $fillable = [
         'nim',
         'password',
+        'pin',
         'role',
     ];
 
     protected $hidden = [
         'password',
+        'pin',
         'remember_token',
     ];
 
@@ -44,6 +46,7 @@ final class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'pin'      => \App\Casts\EncryptedCast::class,
         ];
     }
 

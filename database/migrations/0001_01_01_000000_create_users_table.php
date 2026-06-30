@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('nim', 20)->unique()->comment('Nomor Induk Mahasiswa');
             $table->string('password');
+            $table->text('pin')->nullable()->comment('AES-256-GCM encrypted PIN');
             $table->enum('role', ['admin', 'mahasiswa'])->default('mahasiswa');
             $table->rememberToken();
             $table->timestamps();

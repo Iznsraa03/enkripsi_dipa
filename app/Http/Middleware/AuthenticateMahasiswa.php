@@ -20,6 +20,9 @@ final class AuthenticateMahasiswa
     public function handle(Request $request, Closure $next): Response
     {
         if (! Auth::check()) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthorized.'], 401);
+            }
             return redirect()->route('login')
                 ->with('error', 'Silakan login terlebih dahulu untuk mengakses halaman ini.');
         }

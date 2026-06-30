@@ -27,6 +27,8 @@ Route::middleware('auth.mahasiswa')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule');
     Route::get('/transcript', [TranscriptController::class, 'index'])->name('transcript');
+    Route::post('/transcript/verify-pin', [TranscriptController::class, 'verifyPin'])->name('transcript.verify-pin');
+    Route::get('/transcript/download', [TranscriptController::class, 'download'])->name('transcript.download');
 });
 
 // ── Admin Routes ───────────────────────────────────────────────────────────

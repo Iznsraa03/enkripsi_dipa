@@ -256,6 +256,7 @@
                     <span class="material-symbols-outlined" style="font-size:16px;color:rgba(255,255,255,0.4);">key</span>
                 </span>
             </div>
+            <div id="pinErrorMsg" style="display:none;font-size:11px;color:#f53003;margin-top:6px;font-weight:600;"></div>
         </div>
 
         {{-- Buttons --}}
@@ -293,23 +294,98 @@
 
 @push('scripts')
 <script>
+    let isPinVerified = false;
+
     document.getElementById('verifyPinBtn').addEventListener('click', function () {
-        const pin = document.getElementById('verificationPin').value;
+        const pinInput = document.getElementById('verificationPin');
+        const pin = pinInput.value;
+        const errorMsg = document.getElementById('pinErrorMsg');
+        const btn = this;
+
         if (pin.length < 4) {
-            alert('Masukkan PIN verifikasi terlebih dahulu (min. 4 digit).');
+            errorMsg.innerText = 'Masukkan PIN verifikasi terlebih dahulu (min. 4 digit).';
+            errorMsg.style.display = 'block';
             return;
         }
-        // Dummy: show success
-        this.innerHTML = '<span class="material-symbols-outlined">check_circle</span> PIN Verified!';
-        this.style.background = 'var(--color-success)';
-        setTimeout(() => {
-            this.innerHTML = '<span class="material-symbols-outlined">lock_open</span> Verify PIN';
-            this.style.background = '';
-        }, 2500);
+
+        errorMsg.style.display = 'none';
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 6px; width: 12px; height: 12px; display: inline-block;"></span> Verifying...';
+
+        fetch('{{ route("transcript.verify-pin") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ pin: pin })
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            btn.disabled = false;
+            if (status === 200 && body.success) {
+                isPinVerified = true;
+                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> PIN Verified!';
+                btn.style.background = '#198754'; // success green
+                btn.style.borderColor = '#198754';
+                btn.style.color = '#fff';
+                btn.disabled = true;
+                pinInput.disabled = true;
+
+                // Update download button state
+                const downloadBtn = document.getElementById('downloadTranscriptBtn');
+                downloadBtn.classList.remove('btn-secondary');
+                downloadBtn.classList.add('btn-primary');
+                downloadBtn.style.background = 'var(--color-primary)';
+                downloadBtn.style.color = '#1a1a1a';
+                downloadBtn.style.borderColor = 'var(--color-primary-dark)';
+            } else {
+                errorMsg.innerText = body.message || 'Verifikasi PIN gagal.';
+                errorMsg.style.display = 'block';
+                btn.innerHTML = '<span class="material-symbols-outlined">lock_open</span> Verify PIN';
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            errorMsg.innerText = 'Terjadi kesalahan sistem. Silakan coba lagi.';
+            errorMsg.style.display = 'block';
+            btn.innerHTML = '<span class="material-symbols-outlined">lock_open</span> Verify PIN';
+            console.error(err);
+        });
     });
 
     document.getElementById('downloadTranscriptBtn').addEventListener('click', function () {
-        alert('Fitur download akan tersedia setelah verifikasi PIN berhasil.');
+        if (!isPinVerified) {
+            alert('Fitur download akan tersedia setelah verifikasi PIN berhasil.');
+            return;
+        }
+
+        // Redirect to download route
+        window.location.href = '{{ route("transcript.download") }}';
+
+        // Reset verification state after starting download for security
+        setTimeout(() => {
+            isPinVerified = false;
+            const btn = document.getElementById('verifyPinBtn');
+            const pinInput = document.getElementById('verificationPin');
+            const downloadBtn = document.getElementById('downloadTranscriptBtn');
+
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined">lock_open</span> Verify PIN';
+            btn.style.background = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+
+            pinInput.disabled = false;
+            pinInput.value = '';
+
+            downloadBtn.classList.remove('btn-primary');
+            downloadBtn.classList.add('btn-secondary');
+            downloadBtn.style.background = 'rgba(255,255,255,0.1)';
+            downloadBtn.style.color = '#fff';
+            downloadBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+        }, 1000);
     });
 </script>
 @endpush

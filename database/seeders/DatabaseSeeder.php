@@ -47,12 +47,14 @@ class DatabaseSeeder extends Seeder
         User::create([
             'nim'      => 'admin001',
             'password' => Hash::make('admin123'), // Argon2id via HASH_DRIVER env
+            'pin'      => '123456',
             'role'     => 'admin',
         ]);
 
         $user = User::create([
             'nim'      => '221043',
             'password' => Hash::make('password123'),
+            'pin'      => '123456',
             'role'     => 'mahasiswa',
         ]);
 
@@ -144,8 +146,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->command->info('✅ Seeding selesai!');
-        $this->command->info('   Admin Login : NIM = admin001 | Password = admin123');
-        $this->command->info('   Mhs Login   : NIM = 221043   | Password = password123');
+        $this->command->info('   Admin Login : NIM = admin001 | Password = admin123 | PIN = 123456');
+        $this->command->info('   Mhs Login   : NIM = 221043   | Password = password123 | PIN = 123456');
         $this->command->info('   🔒 Password di-hash Argon2id');
         $this->command->info('   🔒 PII mahasiswa ter-enkripsi AES-256-GCM');
         $this->command->info('   🔒 Nilai angka ter-enkripsi AES-256-GCM');

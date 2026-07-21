@@ -10,6 +10,9 @@ use App\Models\Mahasiswa;
 use App\Models\MataKuliah;
 use App\Models\Nilai;
 use App\Models\User;
+use App\Models\Jurusan;
+use App\Models\Dosen;
+use App\Models\Ruangan;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -40,13 +43,45 @@ class DatabaseSeeder extends Seeder
         MataKuliah::truncate();
         Mahasiswa::truncate();
         User::truncate();
+        Jurusan::truncate();
+        Dosen::truncate();
+        Ruangan::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+        // ── 0. Buat Master Data (Jurusan, Dosen, Ruangan) ────────────────────────
+        $jurusan = Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
+
+        $csvPath = base_path('datauniv baru.csv');
+        $csvData = [];
+        if (($handle = fopen($csvPath, "r")) !== false) {
+            $header = fgetcsv($handle, 1000, ",");
+            // Remove BOM from first header item if exists
+            $header[0] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $header[0]);
+            
+            while (($row = fgetcsv($handle, 1000, ",")) !== false) {
+                if (count($row) >= 8) {
+                    $csvData[] = array_combine($header, $row);
+                }
+            }
+            fclose($handle);
+        }
+
+        $dosenNames = collect($csvData)->pluck('Dosen')->unique()->values();
+        $dosens = [];
+        foreach ($dosenNames as $d) {
+            $dosens[$d] = Dosen::create(['nama_dosen' => $d]);
+        }
+
+        $ruanganNames = collect($csvData)->pluck('Ruang')->unique()->values();
+        $ruangans = [];
+        foreach ($ruanganNames as $r) {
+            $ruangans[$r] = Ruangan::create(['nama_ruangan' => $r]);
+        }
+
         // ── 1. Buat User Admin & Mahasiswa ───────────────────────────────────────
-        // Password di-hash ARGON2ID oleh Laravel 'hashed' cast
         User::create([
             'nim'      => 'admin001',
-            'password' => Hash::make('admin123'), // Argon2id via HASH_DRIVER env
+            'password' => Hash::make('admin123'),
             'pin'      => '123456',
             'role'     => 'admin',
         ]);
@@ -59,82 +94,71 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ── 2. Buat Profil Mahasiswa ─────────────────────────────────────
-        // Data PII di-enkripsi otomatis oleh EncryptedCast (AES-256-GCM)
         $mahasiswa = Mahasiswa::create([
             'user_id'       => $user->id,
-            'nama'          => 'Najwa Rizqiyah Munir',      // → tersimpan ter-enkripsi
-            'email'         => 'najwa.rizqiyah@mahasiswa.ac.id', // → tersimpan ter-enkripsi
-            'alamat'        => 'Jl. Merdeka No. 45, Bandung', // → tersimpan ter-enkripsi
-            'nomor_telepon' => '081234567890',                 // → tersimpan ter-enkripsi
-            'program_studi' => 'Teknik Informatika',
-            'semester'      => 7,
-            'angkatan'      => '2022',
+            'nama'          => 'Najwa Rizqiyah Munir',
+            'email'         => 'najwa.rizqiyah@mahasiswa.ac.id',
+            'alamat'        => 'Jl. Merdeka No. 45, Bandung',
+            'nomor_telepon' => '081234567890',
+            'jurusan_id'    => $jurusan->id,
+            'semester'      => 6,
+            'angkatan'      => '2023',
         ]);
 
         // ── 3. Buat Mata Kuliah ──────────────────────────────────────────
-        $mataKuliahs = [
-            ['kode_mk' => 'TIF601', 'nama_mk' => 'Keamanan Sistem Informasi', 'sks' => 3, 'semester' => 7, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF602', 'nama_mk' => 'Kecerdasan Buatan',         'sks' => 3, 'semester' => 7, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF603', 'nama_mk' => 'Pemrograman Web Lanjut',    'sks' => 3, 'semester' => 7, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF604', 'nama_mk' => 'Basis Data Terdistribusi',  'sks' => 3, 'semester' => 7, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF605', 'nama_mk' => 'Metodologi Penelitian',     'sks' => 2, 'semester' => 7, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF606', 'nama_mk' => 'Skripsi',                   'sks' => 6, 'semester' => 8, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF501', 'nama_mk' => 'Algoritma & Kompleksitas',  'sks' => 3, 'semester' => 5, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF502', 'nama_mk' => 'Pemrograman Berorientasi Objek', 'sks' => 3, 'semester' => 5, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF401', 'nama_mk' => 'Struktur Data',             'sks' => 3, 'semester' => 4, 'jenis' => 'wajib'],
-            ['kode_mk' => 'TIF402', 'nama_mk' => 'Sistem Operasi',            'sks' => 3, 'semester' => 4, 'jenis' => 'wajib'],
-        ];
+        $createdMataKuliahs = collect();
+        $mataKuliahGroups = collect($csvData)->groupBy('Kode');
+        foreach ($mataKuliahGroups as $kode => $group) {
+            $first = $group->first();
+            $semester = (int) substr($first['Kelas'], 0, 1);
+            if ($semester === 0) $semester = 6;
 
-        $createdMataKuliahs = collect($mataKuliahs)->map(
-            fn ($mk) => MataKuliah::create($mk)
-        );
+            $mk = MataKuliah::create([
+                'kode_mk' => $kode,
+                'nama_mk' => $first['Mata Kuliah'],
+                'sks' => (int) $first['SKS'],
+                'semester' => $semester,
+                'jenis' => 'wajib',
+            ]);
+            $createdMataKuliahs->put($kode, $mk);
+        }
 
         // ── 4. Buat Jadwal Kuliah ────────────────────────────────────────
-        $jadwals = [
-            ['mk' => 'TIF601', 'hari' => 'Senin',  'mulai' => '08:00', 'selesai' => '10:30', 'ruangan' => 'Lab 301', 'dosen' => 'Dr. Ahmad Fauzi, M.T.'],
-            ['mk' => 'TIF602', 'hari' => 'Senin',  'mulai' => '13:00', 'selesai' => '15:30', 'ruangan' => 'GD 401',  'dosen' => 'Dr. Siti Nurhaliza, M.Kom.'],
-            ['mk' => 'TIF603', 'hari' => 'Selasa', 'mulai' => '08:00', 'selesai' => '10:30', 'ruangan' => 'Lab 302', 'dosen' => 'Ir. Budi Santoso, M.T.'],
-            ['mk' => 'TIF604', 'hari' => 'Rabu',   'mulai' => '10:00', 'selesai' => '12:30', 'ruangan' => 'Lab 303', 'dosen' => 'Prof. Andi Rahman, Ph.D.'],
-            ['mk' => 'TIF605', 'hari' => 'Kamis',  'mulai' => '09:00', 'selesai' => '10:40', 'ruangan' => 'GD 201',  'dosen' => 'Dr. Lina Wati, M.Pd.'],
-            ['mk' => 'TIF601', 'hari' => 'Jumat',  'mulai' => '13:00', 'selesai' => '14:40', 'ruangan' => 'Lab 301', 'dosen' => 'Dr. Ahmad Fauzi, M.T.'],
-            ['mk' => 'TIF602', 'hari' => 'Rabu',   'mulai' => '08:00', 'selesai' => '09:40', 'ruangan' => 'GD 402',  'dosen' => 'Dr. Siti Nurhaliza, M.Kom.'],
-        ];
+        foreach ($csvData as $j) {
+            $mk = $createdMataKuliahs->get($j['Kode']);
+            
+            $jam = str_replace(['.', ' '], [':', ''], $j['Jam']);
+            $jamParts = explode('-', $jam);
+            $jam_mulai = count($jamParts) > 0 ? $jamParts[0] : '08:00';
+            $jam_selesai = count($jamParts) > 1 ? $jamParts[1] : '10:00';
+            
+            $hari = ucfirst(strtolower($j['Hari']));
 
-        foreach ($jadwals as $j) {
-            $mk = $createdMataKuliahs->firstWhere('kode_mk', $j['mk']);
             JadwalKuliah::create([
+                'mahasiswa_id'  => $mahasiswa->id,
                 'mata_kuliah_id' => $mk->id,
-                'hari'          => $j['hari'],
-                'jam_mulai'     => $j['mulai'],
-                'jam_selesai'   => $j['selesai'],
-                'ruangan'       => $j['ruangan'],
-                'dosen'         => $j['dosen'],
+                'hari'          => $hari,
+                'jam_mulai'     => $jam_mulai,
+                'jam_selesai'   => $jam_selesai,
+                'ruangan_id'    => $ruangans[$j['Ruang']]->id,
+                'dosen_id'      => $dosens[$j['Dosen']]->id,
             ]);
         }
 
         // ── 5. Buat Nilai Mahasiswa ──────────────────────────────────────
-        // `nilai_angka` di-enkripsi otomatis oleh EncryptedCast (AES-256-GCM)
-        $nilaiData = [
-            ['mk' => 'TIF401', 'angka' => '88', 'grade' => 'A',  'sem' => '2023/2024 Ganjil'],
-            ['mk' => 'TIF402', 'angka' => '82', 'grade' => 'A-', 'sem' => '2023/2024 Ganjil'],
-            ['mk' => 'TIF501', 'angka' => '91', 'grade' => 'A',  'sem' => '2023/2024 Genap'],
-            ['mk' => 'TIF502', 'angka' => '85', 'grade' => 'A-', 'sem' => '2023/2024 Genap'],
-            ['mk' => 'TIF601', 'angka' => '95', 'grade' => 'A',  'sem' => '2024/2025 Ganjil'],
-            ['mk' => 'TIF602', 'angka' => '87', 'grade' => 'A-', 'sem' => '2024/2025 Ganjil'],
-            ['mk' => 'TIF603', 'angka' => '90', 'grade' => 'A',  'sem' => '2024/2025 Ganjil'],
-            ['mk' => 'TIF604', 'angka' => '83', 'grade' => 'A-', 'sem' => '2024/2025 Ganjil'],
-            ['mk' => 'TIF605', 'angka' => '88', 'grade' => 'A',  'sem' => '2024/2025 Ganjil'],
-        ];
-
-        foreach ($nilaiData as $n) {
-            $mk = $createdMataKuliahs->firstWhere('kode_mk', $n['mk']);
+        $grades = ['A', 'A-', 'B+', 'B', 'B-'];
+        $scores = [95, 87, 83, 78, 75];
+        $count = 0;
+        foreach ($createdMataKuliahs as $mk) {
             Nilai::create([
                 'mahasiswa_id'   => $mahasiswa->id,
                 'mata_kuliah_id' => $mk->id,
-                'nilai_angka'    => $n['angka'],   // → tersimpan ter-enkripsi AES-256-GCM
-                'grade'          => $n['grade'],
-                'semester_tahun' => $n['sem'],
+                'nilai_angka'    => (string) $scores[$count % 5],
+                'grade'          => $grades[$count % 5],
+                'semester_tahun' => '2023/2024 Genap',
             ]);
+            $count++;
+            if ($count >= 6) break;
         }
 
         // ── 6. Buat IPK ─────────────────────────────────────────────────

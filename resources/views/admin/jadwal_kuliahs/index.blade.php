@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Jadwal Kuliah')
-@section('page_title', 'Kelola Jadwal Kuliah')
+@section('title', 'Kelola Jadwal: ' . $mahasiswa->nama)
+@section('page_title', 'Kelola Jadwal: ' . $mahasiswa->nama . ' (' . ($mahasiswa->user->nim ?? '') . ')')
 
 @section('content')
 
@@ -14,11 +14,16 @@
 
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <div class="card-header-title">
-            <span class="material-symbols-outlined fill">calendar_month</span>
-            Daftar Jadwal Kuliah
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ sim_route('admin.jadwal-kuliahs.index') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" style="padding: 4px 8px;">
+                <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+            </a>
+            <div class="card-header-title mb-0">
+                <span class="material-symbols-outlined fill">calendar_month</span>
+                Daftar Jadwal
+            </div>
         </div>
-        <a href="{{ route('admin.jadwal-kuliahs.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+        <a href="{{ sim_route('admin.jadwal-kuliahs.create', ['mahasiswa_id' => $mahasiswa->id]) }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <span class="material-symbols-outlined">add</span>
             Tambah Jadwal
         </a>
@@ -45,14 +50,14 @@
                         </td>
                         <td>{{ $jadwal->hari }}</td>
                         <td>{{ date('H:i', strtotime($jadwal->jam_mulai)) }} - {{ date('H:i', strtotime($jadwal->jam_selesai)) }}</td>
-                        <td>{{ $jadwal->ruangan }}</td>
-                        <td>{{ $jadwal->dosen }}</td>
+                        <td>{{ $jadwal->ruangan->nama_ruangan ?? '-' }}</td>
+                        <td>{{ $jadwal->dosen->nama_dosen ?? '-' }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="{{ route('admin.jadwal-kuliahs.edit', $jadwal) }}" class="btn btn-sm btn-secondary" title="Edit">
+                                <a href="{{ sim_route('admin.jadwal-kuliahs.edit', $jadwal) }}" class="btn btn-sm btn-secondary" title="Edit">
                                     <span class="material-symbols-outlined" style="font-size:16px;">edit</span>
                                 </a>
-                                <form action="{{ route('admin.jadwal-kuliahs.destroy', $jadwal) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');">
+                                <form action="{{ sim_route('admin.jadwal-kuliahs.destroy', $jadwal) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" title="Hapus">

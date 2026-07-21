@@ -24,8 +24,8 @@ final class StoreMahasiswaRequest extends FormRequest
             'nama'          => ['required', 'string', 'max:255'],
             'email'         => ['required', 'email', 'max:255'],
             'alamat'        => ['nullable', 'string'],
-            'nomor_telepon' => ['nullable', 'string', 'max:30'],
-            'program_studi' => ['required', 'string', 'max:100'],
+            'nomor_telepon' => ['nullable', 'string', 'max:20'],
+            'jurusan_id'    => ['required', 'exists:jurusans,id'],
             'semester'      => ['required', 'integer', 'min:1', 'max:14'],
             'angkatan'      => ['required', 'string', 'size:4'],
         ];

@@ -35,6 +35,14 @@
         {{-- Navbar --}}
         @include('components.navbar')
 
+        {{-- Simulation Mode Banner --}}
+        @if(config('app.simulation'))
+        <div style="background:linear-gradient(90deg,#dc2626,#b91c1c);color:#fff;padding:8px 20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:0.03em;">
+            <span class="material-symbols-outlined" style="font-size:18px;">warning</span>
+            <span>MODE SIMULASI AKTIF — AES-256-GCM &amp; Argon2id <strong>DINONAKTIFKAN</strong>. Data disimpan plaintext &amp; password di-hash Bcrypt.</span>
+        </div>
+        @endif
+
         {{-- Page Header Banner --}}
         <div class="page-header-banner">
             <h2 class="page-header-title">@yield('page_title', 'Dashboard')</h2>

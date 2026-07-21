@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Jadwal Kuliah')
-@section('page_title', 'Tambah Jadwal Kuliah')
+@section('title', 'Tambah Jadwal: ' . $mahasiswa->nama)
+@section('page_title', 'Tambah Jadwal: ' . $mahasiswa->nama)
 
 @section('content')
 
@@ -13,10 +13,16 @@
         </div>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.jadwal-kuliahs.store') }}" method="POST">
+        <form action="{{ sim_route('admin.jadwal-kuliahs.store') }}" method="POST">
             @csrf
             
-            <div class="form-group">
+            <div class="form-group mb-3">
+                <label class="form-label">Mahasiswa</label>
+                <input type="hidden" name="mahasiswa_id" value="{{ $mahasiswa->id }}">
+                <input type="text" class="form-control" value="{{ $mahasiswa->user->nim ?? '-' }} - {{ $mahasiswa->nama }}" disabled>
+            </div>
+
+            <div class="form-group mb-3">
                 <label for="mata_kuliah_id" class="form-label">Mata Kuliah</label>
                 <select name="mata_kuliah_id" id="mata_kuliah_id" class="form-control @error('mata_kuliah_id') is-invalid @enderror" required>
                     <option value="">-- Pilih Mata Kuliah --</option>
@@ -53,20 +59,34 @@
 
             <div class="grid grid-2 gap-3 mb-4">
                 <div class="form-group mb-0">
-                    <label for="ruangan" class="form-label">Ruangan</label>
-                    <input type="text" name="ruangan" id="ruangan" class="form-control @error('ruangan') is-invalid @enderror" value="{{ old('ruangan') }}" required>
-                    @error('ruangan') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
+                    <label for="ruangan_id" class="form-label">Ruangan</label>
+                    <select name="ruangan_id" id="ruangan_id" class="form-control @error('ruangan_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Ruangan --</option>
+                        @foreach($ruangans as $ruangan)
+                            <option value="{{ $ruangan->id }}" {{ old('ruangan_id') == $ruangan->id ? 'selected' : '' }}>
+                                {{ $ruangan->nama_ruangan }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('ruangan_id') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
                 </div>
                 <div class="form-group mb-0">
-                    <label for="dosen" class="form-label">Dosen Pengampu</label>
-                    <input type="text" name="dosen" id="dosen" class="form-control @error('dosen') is-invalid @enderror" value="{{ old('dosen') }}" required>
-                    @error('dosen') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
+                    <label for="dosen_id" class="form-label">Dosen Pengampu</label>
+                    <select name="dosen_id" id="dosen_id" class="form-control @error('dosen_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Dosen --</option>
+                        @foreach($dosens as $dosen)
+                            <option value="{{ $dosen->id }}" {{ old('dosen_id') == $dosen->id ? 'selected' : '' }}>
+                                {{ $dosen->nama_dosen }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('dosen_id') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
                 </div>
             </div>
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Jadwal</button>
-                <a href="{{ route('admin.jadwal-kuliahs.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ sim_route('admin.jadwal-kuliahs.index', ['mahasiswa_id' => $mahasiswa->id]) }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

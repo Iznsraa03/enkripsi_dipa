@@ -9,9 +9,9 @@
 <div class="alert alert-security mb-4">
     <span class="material-symbols-outlined">encrypted</span>
     <div>
-        <strong style="font-size:13px;">Data Jadwal Terenkripsi</strong>
+        <strong style="font-size:13px;">{{ config('app.simulation') ? 'Data Jadwal (Plaintext)' : 'Data Jadwal Terenkripsi' }}</strong>
         <div style="font-size:12px; margin-top:2px;">
-            Seluruh catatan jadwal kuliah dilindungi menggunakan enkripsi <strong>AES-256-GCM</strong> sebelum disimpan ke dalam database. Data hanya dapat dibaca oleh pengguna yang terautentikasi.
+            {{ config('app.simulation') ? 'Seluruh catatan jadwal kuliah disimpan dalam format plaintext (tanpa enkripsi) pada tabel terpisah.' : 'Seluruh catatan jadwal kuliah dilindungi menggunakan enkripsi <strong>AES-256-GCM</strong> sebelum disimpan ke dalam database. Data hanya dapat dibaca oleh pengguna yang terautentikasi.' }}
         </div>
     </div>
 </div>
@@ -21,7 +21,7 @@
     <div class="card-header">
         <div class="card-header-title">
             <span class="material-symbols-outlined fill">calendar_month</span>
-            Jadwal Kuliah — Semester 8
+            Jadwal Kuliah — Semester {{ $mahasiswa->semester ?? '-' }}
         </div>
     </div>
 
@@ -111,76 +111,22 @@
                     </tr>
                 </thead>
                 <tbody id="scheduleBody">
+                    @forelse($jadwals as $jadwal)
                     <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-401</td>
-                        <td style="font-weight:600;">Keamanan Informasi</td>
-                        <td>Senin</td>
-                        <td>08:00 – 10:00</td>
-                        <td>Lab A201</td>
-                        <td>Dr. Ahmad Fauzi, M.Kom</td>
-                        <td class="text-center">3</td>
+                        <td class="text-mono" style="font-size:12px;">{{ $jadwal->mataKuliah->kode_mk }}</td>
+                        <td style="font-weight:600;">{{ $jadwal->mataKuliah->nama_mk }}</td>
+                        <td>{{ $jadwal->hari }}</td>
+                        <td>{{ date('H:i', strtotime($jadwal->jam_mulai)) }} – {{ date('H:i', strtotime($jadwal->jam_selesai)) }}</td>
+                        <td>{{ $jadwal->ruangan->nama_ruangan ?? '-' }}</td>
+                        <td>{{ $jadwal->dosen->nama_dosen ?? '-' }}</td>
+                        <td class="text-center">{{ $jadwal->mataKuliah->sks }}</td>
                         <td><span class="badge badge-success"><span class="material-symbols-outlined fill" style="font-size:11px; margin-right:4px;">check_circle</span>Aktif</span></td>
                     </tr>
+                    @empty
                     <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-402</td>
-                        <td style="font-weight:600;">Kriptografi Terapan</td>
-                        <td>Selasa</td>
-                        <td>10:00 – 12:00</td>
-                        <td>R. 305</td>
-                        <td>Dr. Sari Dewi, M.T</td>
-                        <td class="text-center">3</td>
-                        <td><span class="badge badge-success"><span class="material-symbols-outlined fill" style="font-size:11px; margin-right:4px;">check_circle</span>Aktif</span></td>
+                        <td colspan="8" class="text-center">Belum ada jadwal kuliah.</td>
                     </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-403</td>
-                        <td style="font-weight:600;">Pengembangan Sistem Web</td>
-                        <td>Rabu</td>
-                        <td>13:00 – 15:00</td>
-                        <td>Lab B102</td>
-                        <td>Budi Santoso, S.Kom, M.Cs</td>
-                        <td class="text-center">4</td>
-                        <td><span class="badge badge-success"><span class="material-symbols-outlined fill" style="font-size:11px; margin-right:4px;">check_circle</span>Aktif</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-404</td>
-                        <td style="font-weight:600;">Metodologi Penelitian</td>
-                        <td>Kamis</td>
-                        <td>08:00 – 10:00</td>
-                        <td>R. 210</td>
-                        <td>Prof. Rahmawati, Ph.D</td>
-                        <td class="text-center">2</td>
-                        <td><span class="badge badge-success"><span class="material-symbols-outlined fill" style="font-size:11px; margin-right:4px;">check_circle</span>Aktif</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-405</td>
-                        <td style="font-weight:600;">Basis Data Lanjut</td>
-                        <td>Kamis</td>
-                        <td>13:00 – 15:00</td>
-                        <td>Lab C203</td>
-                        <td>Eko Prasetyo, M.Kom</td>
-                        <td class="text-center">3</td>
-                        <td><span class="badge badge-success"><span class="material-symbols-outlined fill" style="font-size:11px; margin-right:4px;">check_circle</span>Aktif</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-406</td>
-                        <td style="font-weight:600;">Tugas Akhir / Skripsi</td>
-                        <td>Jumat</td>
-                        <td>09:00 – 11:00</td>
-                        <td>R. Pembimbing</td>
-                        <td>Dr. Ahmad Fauzi, M.Kom</td>
-                        <td class="text-center">6</td>
-                        <td><span class="badge badge-warning"><span class="material-symbols-outlined" style="font-size:11px; margin-right:4px;">pending</span>Bimbingan</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-407</td>
-                        <td style="font-weight:600;">Etika Profesi IT</td>
-                        <td>Jumat</td>
-                        <td>13:00 – 15:00</td>
-                        <td>R. 401</td>
-                        <td>Indra Kusuma, S.H, M.H</td>
-                        <td class="text-center">2</td>
-                        <td><span class="badge badge-success"><span class="material-symbols-outlined fill" style="font-size:11px; margin-right:4px;">check_circle</span>Aktif</span></td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -190,11 +136,11 @@
     <div class="card-footer d-flex justify-between align-center">
         <span style="font-size:12px; color:var(--color-text-muted);">
             <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">info</span>
-            Menampilkan <strong>7</strong> mata kuliah · Total SKS: <strong>23</strong>
+            Menampilkan <strong>{{ $jadwals->count() }}</strong> mata kuliah · Total SKS: <strong>{{ $jadwals->sum(fn($j) => $j->mataKuliah->sks) }}</strong>
         </span>
-        <span class="security-badge active" style="font-size:11px;">
-            <span class="dot"></span>
-            AES-256-GCM Protected
+        <span class="security-badge {{ config('app.simulation') ? '' : 'active' }}" style="font-size:11px; {{ config('app.simulation') ? 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);' : '' }}">
+            <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+            {{ config('app.simulation') ? 'Unencrypted (Plaintext)' : 'AES-256-GCM Protected' }}
         </span>
     </div>
 </div>

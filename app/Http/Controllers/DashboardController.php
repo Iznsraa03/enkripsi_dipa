@@ -23,9 +23,11 @@ final class DashboardController extends Controller
         $user = Auth::user();
 
         // Eager-load untuk menghindari N+1 query
-        $mahasiswa = Mahasiswa::with(['ipk', 'nilais.mataKuliah'])
+        $mahasiswa = Mahasiswa::with(['ipk', 'nilais.mataKuliah', 'jurusan'])
             ->where('user_id', $user->id)
             ->first();
+
+
 
         // Jadwal hari ini untuk widget dashboard
         $hariIni = now()->locale('id')->isoFormat('dddd');
@@ -41,6 +43,7 @@ final class DashboardController extends Controller
         $hariKey = array_key_first(array_filter($hariMap, fn ($v) => str_starts_with($hariIni, $v))) ?? null;
 
         $jadwalHariIni = JadwalKuliah::with('mataKuliah')
+            ->where('mahasiswa_id', $mahasiswa->id)
             ->when($hariKey, fn ($q) => $q->where('hari', $hariKey))
             ->orderBy('jam_mulai')
             ->get();

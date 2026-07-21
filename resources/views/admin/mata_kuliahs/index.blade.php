@@ -18,7 +18,7 @@
             <span class="material-symbols-outlined fill">book</span>
             Daftar Mata Kuliah
         </div>
-        <a href="{{ route('admin.mata-kuliahs.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+        <a href="{{ sim_route('admin.mata-kuliahs.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <span class="material-symbols-outlined">add</span>
             Tambah Mata Kuliah
         </a>
@@ -52,10 +52,10 @@
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="{{ route('admin.mata-kuliahs.edit', $mk) }}" class="btn btn-sm btn-secondary" title="Edit">
+                                <a href="{{ sim_route('admin.mata-kuliahs.edit', $mk) }}" class="btn btn-sm btn-secondary" title="Edit">
                                     <span class="material-symbols-outlined" style="font-size:16px;">edit</span>
                                 </a>
-                                <form action="{{ route('admin.mata-kuliahs.destroy', $mk) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini?');">
+                                <form action="{{ sim_route('admin.mata-kuliahs.destroy', $mk) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" title="Hapus">

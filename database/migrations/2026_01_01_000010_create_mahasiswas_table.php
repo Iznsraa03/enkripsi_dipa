@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('alamat')->nullable()->comment('AES-256-GCM encrypted');
             $table->text('nomor_telepon')->nullable()->comment('AES-256-GCM encrypted');
             // Plaintext academic fields
-            $table->string('program_studi', 100);
+            $table->foreignId('jurusan_id')->constrained('jurusans')->cascadeOnDelete();
             $table->unsignedTinyInteger('semester')->default(1);
             $table->string('angkatan', 4);
             $table->timestamps();

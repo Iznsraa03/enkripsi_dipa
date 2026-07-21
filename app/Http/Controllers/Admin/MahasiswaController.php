@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreMahasiswaRequest;
 use App\Http\Requests\Admin\UpdateMahasiswaRequest;
+use App\Models\Jurusan;
 use App\Models\Mahasiswa;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +25,8 @@ final class MahasiswaController extends Controller
 
     public function create(): View
     {
-        return view('admin.mahasiswas.create');
+        $jurusans = Jurusan::all();
+        return view('admin.mahasiswas.create', compact('jurusans'));
     }
 
     public function store(StoreMahasiswaRequest $request): RedirectResponse
@@ -44,7 +46,7 @@ final class MahasiswaController extends Controller
                 'email'         => $data['email'],
                 'alamat'        => $data['alamat'],
                 'nomor_telepon' => $data['nomor_telepon'],
-                'program_studi' => $data['program_studi'],
+                'jurusan_id'    => $data['jurusan_id'],
                 'semester'      => $data['semester'],
                 'angkatan'      => $data['angkatan'],
             ]);
@@ -57,7 +59,8 @@ final class MahasiswaController extends Controller
     public function edit(Mahasiswa $mahasiswa): View
     {
         $mahasiswa->load('user');
-        return view('admin.mahasiswas.edit', compact('mahasiswa'));
+        $jurusans = Jurusan::all();
+        return view('admin.mahasiswas.edit', compact('mahasiswa', 'jurusans'));
     }
 
     public function update(UpdateMahasiswaRequest $request, Mahasiswa $mahasiswa): RedirectResponse
@@ -76,7 +79,7 @@ final class MahasiswaController extends Controller
                 'email'         => $data['email'],
                 'alamat'        => $data['alamat'],
                 'nomor_telepon' => $data['nomor_telepon'],
-                'program_studi' => $data['program_studi'],
+                'jurusan_id'    => $data['jurusan_id'],
                 'semester'      => $data['semester'],
                 'angkatan'      => $data['angkatan'],
             ]);

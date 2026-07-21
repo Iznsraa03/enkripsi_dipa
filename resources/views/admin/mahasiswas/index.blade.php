@@ -18,7 +18,7 @@
             <span class="material-symbols-outlined fill">person</span>
             Daftar Profil Mahasiswa
         </div>
-        <a href="{{ route('admin.mahasiswas.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+        <a href="{{ sim_route('admin.mahasiswas.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <span class="material-symbols-outlined">add</span>
             Tambah Mahasiswa
         </a>
@@ -46,15 +46,15 @@
                                 <span class="text-muted" style="font-size:11px;">{{ $mhs->email }}</span>
                             </div>
                         </td>
-                        <td>{{ $mhs->program_studi }}</td>
+                        <td>{{ $mhs->jurusan->nama_jurusan ?? '-' }}</td>
                         <td>{{ $mhs->semester }}</td>
                         <td>{{ $mhs->angkatan }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="{{ route('admin.mahasiswas.edit', $mhs) }}" class="btn btn-sm btn-secondary" title="Edit">
+                                <a href="{{ sim_route('admin.mahasiswas.edit', $mhs) }}" class="btn btn-sm btn-secondary" title="Edit">
                                     <span class="material-symbols-outlined" style="font-size:16px;">edit</span>
                                 </a>
-                                <form action="{{ route('admin.mahasiswas.destroy', $mhs) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mahasiswa ini? Menghapus mahasiswa juga akan menghapus akun user, nilai, dan IPK secara permanen.');">
+                                <form action="{{ sim_route('admin.mahasiswas.destroy', $mhs) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mahasiswa ini? Menghapus mahasiswa juga akan menghapus akun user, nilai, dan IPK secara permanen.');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" title="Hapus">

@@ -50,11 +50,18 @@
         {{-- Login Card --}}
         <div class="login-card">
 
-            {{-- Encryption Notice --}}
+            {{-- Encryption / Simulation Notice --}}
+            @if(config('app.simulation'))
+            <div class="login-enc-notice" style="background:linear-gradient(90deg,rgba(220,38,38,0.12),rgba(185,28,28,0.12));border:1.5px solid #dc2626;color:#dc2626;">
+                <span class="material-symbols-outlined" style="color:#dc2626;">warning</span>
+                <span>MODE SIMULASI &mdash; Enkripsi <strong>DINONAKTIFKAN</strong></span>
+            </div>
+            @else
             <div class="login-enc-notice">
                 <span class="material-symbols-outlined">lock</span>
                 <span>Protected with Argon2id &amp; AES-256-GCM Encryption</span>
             </div>
+            @endif
 
             {{-- Flash Messages --}}
             @if (session('error'))
@@ -65,7 +72,7 @@
             @endif
 
             {{-- Login Form --}}
-            <form action="{{ route('login.post') }}" method="POST" id="loginForm">
+            <form action="{{ sim_route('login.post') }}" method="POST" id="loginForm">
                 @csrf
 
                 {{-- NIM Field --}}
@@ -131,10 +138,17 @@
         <div class="login-footer">
             <p>&copy; Copyright {{ date('Y') }}. All rights reserved.</p>
 
+            @if(config('app.simulation'))
+            <div class="encryption-badge" style="background:rgba(220,38,38,0.12);border:1px solid #dc2626;color:#dc2626;font-size:11px;">
+                <span class="dot" style="background:#dc2626;"></span>
+                <span>ENCRYPTION INACTIVE</span>
+            </div>
+            @else
             <div class="encryption-badge" style="font-size:11px;">
                 <span class="dot"></span>
                 <span>ENCRYPTION ACTIVE</span>
             </div>
+            @endif
         </div>
 
     </div>{{-- end .login-wrapper --}}

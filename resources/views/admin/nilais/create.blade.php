@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Input Nilai')
-@section('page_title', 'Input Nilai Mahasiswa')
+@section('title', 'Input Nilai: ' . $mahasiswa->nama)
+@section('page_title', 'Input Nilai: ' . $mahasiswa->nama)
 
 @section('content')
 
@@ -21,21 +21,14 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.nilais.store') }}" method="POST">
+        <form action="{{ sim_route('admin.nilais.store') }}" method="POST">
             @csrf
             
             <div class="grid grid-2 gap-3 mb-4">
-                <div class="form-group mb-0">
-                    <label for="mahasiswa_id" class="form-label">Mahasiswa</label>
-                    <select name="mahasiswa_id" id="mahasiswa_id" class="form-control @error('mahasiswa_id') is-invalid @enderror" required>
-                        <option value="">-- Pilih Mahasiswa --</option>
-                        @foreach($mahasiswas as $mhs)
-                            <option value="{{ $mhs->id }}" {{ old('mahasiswa_id') == $mhs->id ? 'selected' : '' }}>
-                                {{ $mhs->user->nim ?? '-' }} - {{ $mhs->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('mahasiswa_id') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
+                <div class="form-group mb-3">
+                    <label class="form-label">Mahasiswa</label>
+                    <input type="hidden" name="mahasiswa_id" value="{{ $mahasiswa->id }}">
+                    <input type="text" class="form-control" value="{{ $mahasiswa->user->nim ?? '-' }} - {{ $mahasiswa->nama }}" disabled>
                 </div>
                 <div class="form-group mb-0">
                     <label for="mata_kuliah_id" class="form-label">Mata Kuliah</label>
@@ -66,7 +59,7 @@
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Nilai & Kalkulasi IPK</button>
-                <a href="{{ route('admin.nilais.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ sim_route('admin.nilais.index', ['mahasiswa_id' => $mahasiswa->id]) }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

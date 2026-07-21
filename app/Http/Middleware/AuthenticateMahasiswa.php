@@ -23,7 +23,13 @@ final class AuthenticateMahasiswa
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Unauthorized.'], 401);
             }
-            return redirect()->route('login')
+
+            // Jika request berasal dari prefix /simulasi, redirect ke login simulasi
+            $loginRoute = str_starts_with($request->path(), 'simulasi')
+                ? route('simulasi.login')
+                : route('login');
+
+            return redirect($loginRoute)
                 ->with('error', 'Silakan login terlebih dahulu untuk mengakses halaman ini.');
         }
 

@@ -24,18 +24,34 @@ final class JadwalKuliah extends Model
     use HasFactory;
 
     protected $fillable = [
+        'mahasiswa_id',
         'mata_kuliah_id',
         'hari',
         'jam_mulai',
         'jam_selesai',
-        'ruangan',
-        'dosen',
+        'ruangan_id',
+        'dosen_id',
     ];
 
     // ----- Relationships -----
 
+    public function mahasiswa(): BelongsTo
+    {
+        return $this->belongsTo(Mahasiswa::class);
+    }
+
     public function mataKuliah(): BelongsTo
     {
         return $this->belongsTo(MataKuliah::class);
+    }
+
+    public function dosen(): BelongsTo
+    {
+        return $this->belongsTo(Dosen::class);
+    }
+
+    public function ruangan(): BelongsTo
+    {
+        return $this->belongsTo(Ruangan::class);
     }
 }

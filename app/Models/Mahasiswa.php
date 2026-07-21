@@ -38,7 +38,7 @@ final class Mahasiswa extends Model
         'email',
         'alamat',
         'nomor_telepon',
-        'program_studi',
+        'jurusan_id',
         'semester',
         'angkatan',
     ];
@@ -59,6 +59,11 @@ final class Mahasiswa extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function jurusan(): BelongsTo
+    {
+        return $this->belongsTo(Jurusan::class);
     }
 
     public function nilais(): HasMany

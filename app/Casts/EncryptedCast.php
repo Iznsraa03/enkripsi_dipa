@@ -51,6 +51,11 @@ final class EncryptedCast implements CastsAttributes
             return null;
         }
 
+        // MODE SIMULASI: skip dekripsi — kembalikan nilai mentah dari DB
+        if (config('app.simulation') === true || config('database.default') === 'mysql_simulation') {
+            return (string) $value;
+        }
+
         try {
             return $this->service()->decrypt($value);
         } catch (\Throwable $e) {
@@ -76,6 +81,11 @@ final class EncryptedCast implements CastsAttributes
     {
         if ($value === null) {
             return null;
+        }
+
+        // MODE SIMULASI: skip enkripsi — simpan nilai plaintext ke DB
+        if (config('app.simulation') === true || config('database.default') === 'mysql_simulation') {
+            return (string) $value;
         }
 
         return $this->service()->encrypt((string) $value);

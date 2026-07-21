@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.users.store') }}" method="POST">
+        <form action="{{ sim_route('admin.users.store') }}" method="POST">
             @csrf
 
             <div class="form-group">
@@ -46,7 +46,7 @@
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Akun</button>
-                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ sim_route('admin.users.index') }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

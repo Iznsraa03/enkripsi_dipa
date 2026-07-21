@@ -25,7 +25,7 @@
             <span class="material-symbols-outlined fill">group</span>
             Daftar Akun
         </div>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+        <a href="{{ sim_route('admin.users.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
             <span class="material-symbols-outlined">add</span>
             Tambah Akun
         </a>
@@ -57,10 +57,10 @@
                         <td>{{ $user->created_at->format('d M Y H:i') }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-secondary" title="Edit">
+                                <a href="{{ sim_route('admin.users.edit', $user) }}" class="btn btn-sm btn-secondary" title="Edit">
                                     <span class="material-symbols-outlined" style="font-size:16px;">edit</span>
                                 </a>
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
+                                <form action="{{ sim_route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" title="Hapus">

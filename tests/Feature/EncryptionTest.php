@@ -100,13 +100,15 @@ class EncryptionTest extends TestCase
     {
         $user = User::factory()->create();
 
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
+
         Mahasiswa::create([
             'user_id'       => $user->id,
             'nama'          => 'Najwa Rizqiyah Munir',
             'email'         => 'najwa@student.ac.id',
             'alamat'        => 'Jl. Merdeka No. 1',
             'nomor_telepon' => '08123456789',
-            'program_studi' => 'Teknik Informatika',
+            'jurusan_id'    => $jurusan->id,
             'semester'      => 7,
             'angkatan'      => '2022',
         ]);
@@ -134,13 +136,15 @@ class EncryptionTest extends TestCase
     {
         $user = User::factory()->create();
 
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
+
         Mahasiswa::create([
             'user_id'       => $user->id,
             'nama'          => 'Najwa Rizqiyah Munir',
             'email'         => 'najwa@student.ac.id',
             'alamat'        => 'Jl. Merdeka No. 1',
             'nomor_telepon' => '08123456789',
-            'program_studi' => 'Teknik Informatika',
+            'jurusan_id'    => $jurusan->id,
             'semester'      => 7,
             'angkatan'      => '2022',
         ]);
@@ -220,6 +224,8 @@ class EncryptionTest extends TestCase
             'role'     => 'mahasiswa',
         ]);
 
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Informatika']);
+
         // Hubungkan profile mahasiswa
         Mahasiswa::create([
             'user_id'       => $user->id,
@@ -227,7 +233,7 @@ class EncryptionTest extends TestCase
             'email'         => 'najwa@student.ac.id',
             'alamat'        => 'Bandung',
             'nomor_telepon' => '0812345',
-            'program_studi' => 'Informatika',
+            'jurusan_id'    => $jurusan->id,
             'semester'      => 7,
             'angkatan'      => '2022',
         ]);

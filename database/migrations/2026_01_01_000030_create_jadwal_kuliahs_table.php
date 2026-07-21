@@ -15,12 +15,13 @@ return new class extends Migration
     {
         Schema::create('jadwal_kuliahs', function (Blueprint $table): void {
             $table->id();
+            $table->foreignId('mahasiswa_id')->constrained()->cascadeOnDelete();
             $table->foreignId('mata_kuliah_id')->constrained()->cascadeOnDelete();
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->time('jam_mulai');
             $table->time('jam_selesai');
-            $table->string('ruangan', 20);
-            $table->string('dosen', 100);
+            $table->foreignId('ruangan_id')->constrained('ruangans')->cascadeOnDelete();
+            $table->foreignId('dosen_id')->constrained('dosens')->cascadeOnDelete();
             $table->timestamps();
         });
     }

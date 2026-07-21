@@ -12,22 +12,29 @@ use App\Models\Mahasiswa;
 use App\Models\MataKuliah;
 use App\Models\Nilai;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 final class NilaiController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $nilais = Nilai::with(['mahasiswa', 'mataKuliah'])->latest()->paginate(10);
-        return view('admin.nilais.index', compact('nilais'));
+        if ($request->has('mahasiswa_id')) {
+            $mahasiswa = Mahasiswa::with('user')->findOrFail($request->mahasiswa_id);
+            $nilais = Nilai::with(['mataKuliah'])->where('mahasiswa_id', $mahasiswa->id)->latest()->paginate(10);
+            return view('admin.nilais.index', compact('nilais', 'mahasiswa'));
+        }
+
+        $mahasiswas = Mahasiswa::with('user')->latest()->paginate(10);
+        return view('admin.nilais.index_students', compact('mahasiswas'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        $mahasiswas = Mahasiswa::all();
+        $mahasiswa = Mahasiswa::with('user')->findOrFail($request->mahasiswa_id);
         $mataKuliahs = MataKuliah::all();
-        return view('admin.nilais.create', compact('mahasiswas', 'mataKuliahs'));
+        return view('admin.nilais.create', compact('mahasiswa', 'mataKuliahs'));
     }
 
     public function store(StoreNilaiRequest $request): RedirectResponse
@@ -40,15 +47,15 @@ final class NilaiController extends Controller
             Ipk::recalculateForMahasiswa((int) $data['mahasiswa_id']);
         });
 
-        return redirect()->route('admin.nilais.index')
+        return redirect()->route('admin.nilais.index', ['mahasiswa_id' => $data['mahasiswa_id']])
             ->with('success', 'Nilai berhasil ditambahkan dan IPK diperbarui.');
     }
 
     public function edit(Nilai $nilai): View
     {
-        $mahasiswas = Mahasiswa::all();
+        $mahasiswa = $nilai->mahasiswa;
         $mataKuliahs = MataKuliah::all();
-        return view('admin.nilais.edit', compact('nilai', 'mahasiswas', 'mataKuliahs'));
+        return view('admin.nilais.edit', compact('nilai', 'mahasiswa', 'mataKuliahs'));
     }
 
     public function update(UpdateNilaiRequest $request, Nilai $nilai): RedirectResponse
@@ -61,7 +68,7 @@ final class NilaiController extends Controller
             Ipk::recalculateForMahasiswa((int) $data['mahasiswa_id']);
         });
 
-        return redirect()->route('admin.nilais.index')
+        return redirect()->route('admin.nilais.index', ['mahasiswa_id' => $data['mahasiswa_id']])
             ->with('success', 'Nilai berhasil diperbarui dan IPK diperbarui.');
     }
 
@@ -74,7 +81,7 @@ final class NilaiController extends Controller
             Ipk::recalculateForMahasiswa($mahasiswaId);
         });
 
-        return redirect()->route('admin.nilais.index')
+        return redirect()->route('admin.nilais.index', ['mahasiswa_id' => $mahasiswaId])
             ->with('success', 'Nilai berhasil dihapus dan IPK diperbarui.');
     }
 

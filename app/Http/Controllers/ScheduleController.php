@@ -23,6 +23,7 @@ final class ScheduleController extends Controller
 
         // Ambil semua jadwal dengan eager-load mata kuliah
         $jadwals = JadwalKuliah::with('mataKuliah')
+            ->where('mahasiswa_id', $mahasiswa->id)
             ->orderByRaw("FIELD(hari, 'Senin','Selasa','Rabu','Kamis','Jumat','Sabtu')")
             ->orderBy('jam_mulai')
             ->get();

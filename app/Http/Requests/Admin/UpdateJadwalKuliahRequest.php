@@ -16,12 +16,13 @@ final class UpdateJadwalKuliahRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'mahasiswa_id'   => ['required', 'exists:mahasiswas,id'],
             'mata_kuliah_id' => ['required', 'exists:mata_kuliahs,id'],
             'hari'           => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu'],
             'jam_mulai'      => ['required', 'date_format:H:i'],
             'jam_selesai'    => ['required', 'date_format:H:i', 'after:jam_mulai'],
-            'ruangan'        => ['required', 'string', 'max:50'],
-            'dosen'          => ['required', 'string', 'max:100'],
+            'ruangan_id'     => ['required', 'exists:ruangans,id'],
+            'dosen_id'       => ['required', 'exists:dosens,id'],
         ];
     }
 }

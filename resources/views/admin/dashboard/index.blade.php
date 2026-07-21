@@ -90,7 +90,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <!-- <div class="card">
         <div class="card-header">
             <div class="card-header-title">
                 <span class="material-symbols-outlined fill">security</span>
@@ -101,7 +101,7 @@
                 SECURE
             </span>
         </div>
-        <div class="card-body">
+        <!-- <div class="card-body">
             <div class="security-status-grid">
                 <div class="security-status-item">
                     <div class="status-icon">
@@ -122,7 +122,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 

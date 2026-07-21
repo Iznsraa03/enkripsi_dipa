@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.mata-kuliahs.update', $mataKuliah) }}" method="POST">
+        <form action="{{ sim_route('admin.mata-kuliahs.update', $mataKuliah) }}" method="POST">
             @csrf
             @method('PUT')
             
@@ -53,7 +53,7 @@
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                <a href="{{ route('admin.mata-kuliahs.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ sim_route('admin.mata-kuliahs.index') }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

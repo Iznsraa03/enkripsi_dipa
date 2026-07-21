@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "drawio": {
+      "source": "jgraph/drawio-mcp",
+      "sourceType": "github",
+      "skillPath": "plugins/claude-code/skills/drawio/SKILL.md",
+      "computedHash": "013953b81f420dc3444604d03608f3c02672b94b8e753ec2027e3615a678591b"
+    },
     "laravel-specialist": {
       "source": "jeffallan/claude-skills",
       "sourceType": "github",

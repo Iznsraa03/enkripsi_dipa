@@ -12,7 +12,7 @@
         <div class="gpa-card-icon gold">
             <span class="material-symbols-outlined fill">star</span>
         </div>
-        <div class="gpa-card-value">3.92</div>
+        <div class="gpa-card-value">{{ $ipk }}</div>
         <div class="gpa-card-label">IPK Saat Ini</div>
     </div>
 
@@ -20,7 +20,7 @@
         <div class="gpa-card-icon green">
             <span class="material-symbols-outlined fill">calculate</span>
         </div>
-        <div class="gpa-card-value">144</div>
+        <div class="gpa-card-value">{{ $totalSks }}</div>
         <div class="gpa-card-label">Total SKS</div>
     </div>
 
@@ -28,7 +28,7 @@
         <div class="gpa-card-icon blue">
             <span class="material-symbols-outlined fill">check_circle</span>
         </div>
-        <div class="gpa-card-value">48</div>
+        <div class="gpa-card-value">{{ collect($nilais)->whereIn('grade', ['A','A-','B+','B','B-','C+','C'])->count() }}</div>
         <div class="gpa-card-label">Mata Kuliah Lulus</div>
     </div>
 
@@ -36,7 +36,7 @@
         <div class="gpa-card-icon purple">
             <span class="material-symbols-outlined fill">workspace_premium</span>
         </div>
-        <div class="gpa-card-value" style="font-size:16px;">Cum Laude</div>
+        <div class="gpa-card-value" style="font-size:16px;">{{ (float)$ipk >= 3.5 ? 'Cum Laude' : 'Sangat Memuaskan' }}</div>
         <div class="gpa-card-label">Status Akademik</div>
     </div>
 
@@ -52,7 +52,7 @@
                 <span class="material-symbols-outlined fill">description</span>
                 Transkrip Nilai Akademik
             </div>
-            <span style="font-size:12px;color:var(--color-text-muted);">Najwa Rizqiyah Munir · NIM 221043</span>
+            <span style="font-size:12px;color:var(--color-text-muted);">{{ $mahasiswa->nama ?? 'Nama Mahasiswa' }} · NIM {{ auth()->user()->nim }}</span>
         </div>
 
         <div class="card-body p-0">
@@ -99,102 +99,20 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse($nilais as $nilai)
                     <tr>
-                        <td class="text-mono" style="font-size:12px;">MTK-101</td>
-                        <td>Matematika Diskrit</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-primary">Sem. 1</span></td>
+                        <td class="text-mono" style="font-size:12px;">{{ $nilai->mataKuliah->kode_mk }}</td>
+                        <td>{{ $nilai->mataKuliah->nama_mk }}</td>
+                        <td style="text-align:center;">{{ $nilai->mataKuliah->sks }}</td>
+                        <td style="text-align:center;" class="grade-{{ strtolower(substr($nilai->grade, 0, 1)) }}">{{ $nilai->grade }}</td>
+                        <td style="text-align:center;">{{ is_numeric($nilai->nilai_angka) ? number_format((float)$nilai->nilai_angka, 1) : '-' }}</td>
+                        <td><span class="badge badge-primary">{{ $nilai->semester_tahun }}</span></td>
                     </tr>
+                    @empty
                     <tr>
-                        <td class="text-mono" style="font-size:12px;">SI-101</td>
-                        <td>Pengantar Sistem Informasi</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-primary">Sem. 1</span></td>
+                        <td colspan="6" class="text-center py-4">Belum ada transkrip nilai.</td>
                     </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">PRG-101</td>
-                        <td>Pemrograman Dasar</td>
-                        <td style="text-align:center;">4</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-primary">Sem. 1</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">BD-201</td>
-                        <td>Basis Data</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-b">B+</td>
-                        <td style="text-align:center;">3.5</td>
-                        <td><span class="badge badge-info">Sem. 2</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">NET-201</td>
-                        <td>Jaringan Komputer</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-info">Sem. 2</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">WEB-301</td>
-                        <td>Pemrograman Web</td>
-                        <td style="text-align:center;">4</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-warning">Sem. 3</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">OS-301</td>
-                        <td>Sistem Operasi</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-b">B+</td>
-                        <td style="text-align:center;">3.5</td>
-                        <td><span class="badge badge-warning">Sem. 3</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">RPL-401</td>
-                        <td>Rekayasa Perangkat Lunak</td>
-                        <td style="text-align:center;">4</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-success">Sem. 4</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">AI-501</td>
-                        <td>Kecerdasan Buatan</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-success">Sem. 5</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">SEC-601</td>
-                        <td>Keamanan Jaringan</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-success">Sem. 6</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">CRYPTO-701</td>
-                        <td>Kriptografi</td>
-                        <td style="text-align:center;">3</td>
-                        <td style="text-align:center;" class="grade-a">A</td>
-                        <td style="text-align:center;">4.0</td>
-                        <td><span class="badge badge-success">Sem. 7</span></td>
-                    </tr>
-                    <tr>
-                        <td class="text-mono" style="font-size:12px;">TA-801</td>
-                        <td>Tugas Akhir / Skripsi</td>
-                        <td style="text-align:center;">6</td>
-                        <td style="text-align:center;" class="text-muted">—</td>
-                        <td style="text-align:center;" class="text-muted">—</td>
-                        <td><span class="badge badge-warning">Sem. 8</span></td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -202,11 +120,11 @@
 
     <div class="card-footer d-flex justify-between align-center">
         <span style="font-size:12px;color:var(--color-text-muted);">
-            Total: <strong>12</strong> mata kuliah · <strong>42</strong> SKS ditampilkan
+            Total: <strong>{{ collect($nilais)->count() }}</strong> mata kuliah · <strong>{{ $totalSks }}</strong> SKS ditampilkan
         </span>
-        <span class="security-badge active" style="font-size:11px;">
-            <span class="dot"></span>
-            AES-256-GCM Protected
+        <span class="security-badge {{ config('app.simulation') ? '' : 'active' }}" style="font-size:11px; {{ config('app.simulation') ? 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);' : '' }}">
+            <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+            {{ config('app.simulation') ? 'Unencrypted (Plaintext)' : 'AES-256-GCM Protected' }}
         </span>
     </div>
 </div>
@@ -215,29 +133,29 @@
 <div style="display:flex; flex-direction:column; gap:16px;">
 
     {{-- Transcript Security Verification --}}
-    <div class="verification-card">
-        <div class="verification-card-title">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:4px;">verified_user</span>
-            Transcript Security Verification
+    <div class="verification-card" style="{{ config('app.simulation') ? 'border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);' : '' }}">
+        <div class="verification-card-title" style="{{ config('app.simulation') ? 'color: #ef4444;' : '' }}">
+            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:4px;">{{ config('app.simulation') ? 'warning' : 'verified_user' }}</span>
+            {{ config('app.simulation') ? 'Simulation Verification' : 'Transcript Security Verification' }}
         </div>
-        <div class="verification-card-sub">Verifikasi diperlukan sebelum mengunduh transkrip resmi.</div>
+        <div class="verification-card-sub">{{ config('app.simulation') ? 'Mode simulasi aktif. Sistem tidak menggunakan enkripsi AES-256-GCM dan verifikasi menggunakan hash Bcrypt.' : 'Verifikasi diperlukan sebelum mengunduh transkrip resmi.' }}</div>
 
         <div class="verification-badge-list">
             <div class="verification-badge-item">
-                <span class="dot"></span>
-                PIN Verification Required
+                <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+                {{ config('app.simulation') ? 'PIN Verification (Bypass)' : 'PIN Verification Required' }}
             </div>
             <div class="verification-badge-item">
-                <span class="dot"></span>
-                Protected using Argon2id
+                <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+                {{ config('app.simulation') ? 'Hashed using Bcrypt' : 'Protected using Argon2id' }}
             </div>
             <div class="verification-badge-item">
-                <span class="dot"></span>
-                Secure Download Available
+                <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+                {{ config('app.simulation') ? 'Unsecure Download' : 'Secure Download Available' }}
             </div>
             <div class="verification-badge-item">
-                <span class="dot"></span>
-                AES-256-GCM Encrypted
+                <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+                {{ config('app.simulation') ? 'Plaintext Export' : 'AES-256-GCM Encrypted' }}
             </div>
         </div>
 
@@ -278,10 +196,10 @@
             <div class="card-body">
                 <div style="text-align:center;padding:8px 0;">
                     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);margin-bottom:6px;">Indeks Prestasi Kumulatif</div>
-                    <div style="font-size:44px;font-weight:800;color:var(--color-primary-deepdark);line-height:1;">3.92</div>
-                    <div style="font-size:12px;color:var(--color-success);font-weight:600;margin-top:4px;">★ Cum Laude</div>
+                    <div style="font-size:44px;font-weight:800;color:var(--color-primary-deepdark);line-height:1;">{{ $ipk }}</div>
+                    <div style="font-size:12px;color:var(--color-success);font-weight:600;margin-top:4px;">★ {{ (float)$ipk >= 3.5 ? 'Cum Laude' : 'Sangat Memuaskan' }}</div>
                     <div class="divider"></div>
-                    <div style="font-size:12px;color:var(--color-text-muted);">144 SKS · 48 Mata Kuliah</div>
+                    <div style="font-size:12px;color:var(--color-text-muted);">{{ $totalSks }} SKS · {{ collect($nilais)->count() }} Mata Kuliah</div>
                 </div>
             </div>
         </div>
@@ -312,7 +230,7 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 6px; width: 12px; height: 12px; display: inline-block;"></span> Verifying...';
 
-        fetch('{{ route("transcript.verify-pin") }}', {
+        fetch('{{ sim_route("transcript.verify-pin") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -362,7 +280,7 @@
         }
 
         // Redirect to download route
-        window.location.href = '{{ route("transcript.download") }}';
+        window.location.href = '{{ sim_route("transcript.download") }}';
 
         // Reset verification state after starting download for security
         setTimeout(() => {

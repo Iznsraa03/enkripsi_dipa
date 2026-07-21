@@ -34,6 +34,19 @@ class AuthTest extends TestCase
             'password' => Hash::make('password123'),
             'role'     => 'mahasiswa',
         ]);
+
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
+
+        \App\Models\Mahasiswa::create([
+            'user_id'       => $this->user->id,
+            'nama'          => 'Najwa Rizqiyah Munir',
+            'email'         => 'najwa.rizqiyah@mahasiswa.ac.id',
+            'alamat'        => 'Jl. Merdeka No. 45, Bandung',
+            'nomor_telepon' => '081234567890',
+            'jurusan_id'    => $jurusan->id,
+            'semester'      => 6,
+            'angkatan'      => '2023',
+        ]);
     }
 
     /** Test 1: Login berhasil dengan credentials yang valid. */

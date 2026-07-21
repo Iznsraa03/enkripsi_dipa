@@ -23,7 +23,7 @@ final class EncryptionService
 {
     private readonly string $key;
     private const CIPHER    = 'aes-256-gcm';
-    private const IV_LENGTH = 12; // NIST recommended for GCM
+    private const IV_LENGTH = 12;
     private const TAG_LENGTH = 16;
 
     public function __construct()

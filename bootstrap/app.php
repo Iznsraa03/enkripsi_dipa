@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Jalankan SimulationMiddleware paling pertama di web group agar koneksi beralih sebelum Route Model Binding (SubstituteBindings)
+        $middleware->prependToGroup('web', \App\Http\Middleware\SimulationMiddleware::class);
+
         // Alias untuk middleware autentikasi SIAKAD
         $middleware->alias([
             'auth.mahasiswa' => AuthenticateMahasiswa::class,

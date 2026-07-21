@@ -15,18 +15,32 @@
         {{-- Brand Text --}}
         <div>
             <div class="navbar-title">UNDIPA MAKASSAR</div>
-            <div class="navbar-subtitle">Secure Academic Portal</div>
+            <div class="navbar-subtitle">
+                @if(config('app.simulation'))
+                    Simulation Portal
+                @else
+                    Secure Academic Portal
+                @endif
+            </div>
         </div>
     </div>
 
     {{-- Right: Actions --}}
     <div class="navbar-actions">
-        {{-- Encryption Active Badge --}}
+        {{-- Encryption / Simulation Badge --}}
+        @if(config('app.simulation'))
+        <div class="encryption-badge" style="background:rgba(220,38,38,0.1);border-color:#dc2626;color:#dc2626;">
+            <span class="dot" style="background:#dc2626;"></span>
+            <span class="material-symbols-outlined fill" style="font-size:12px;color:#dc2626;">warning</span>
+            <span>ENCRYPTION INACTIVE</span>
+        </div>
+        @else
         <div class="encryption-badge">
             <span class="dot"></span>
             <span class="material-symbols-outlined fill" style="font-size: 12px; color: #16a34a;">shield</span>
             <span>ENCRYPTION ACTIVE</span>
         </div>
+        @endif
 
         {{-- User Menu --}}
         <div class="user-menu">

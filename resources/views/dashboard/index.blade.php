@@ -49,7 +49,7 @@
         </div>
         <div class="stat-card-body">
             <div class="stat-card-label">Program Studi</div>
-            <div class="stat-card-value" style="font-size:16px; font-weight:700;">{{ $mahasiswa?->program_studi ?? '-' }}</div>
+            <div class="stat-card-value" style="font-size:16px; font-weight:700;">{{ $mahasiswa?->jurusan?->nama_jurusan ?? '-' }}</div>
             <div class="stat-card-sub">{{ $mahasiswa?->angkatan ? 'Angkatan ' . $mahasiswa->angkatan : 'Fakultas Teknologi' }}</div>
         </div>
     </div>
@@ -125,7 +125,7 @@
                     <span class="material-symbols-outlined fill">account_balance</span>
                     Program Studi
                 </div>
-                <div class="profile-value">: {{ $mahasiswa?->program_studi ?? '-' }}</div>
+                <div class="profile-value">: {{ $mahasiswa?->jurusan->nama_jurusan ?? '-' }}</div>
             </div>
 
             <div class="profile-row">
@@ -153,12 +153,14 @@
         <div class="card">
             <div class="card-header">
                 <div class="card-header-title">
-                    <span class="material-symbols-outlined fill">security</span>
-                    Status Keamanan Sistem
+                    <span class="material-symbols-outlined fill" style="{{ config('app.simulation') ? 'color: #ef4444;' : '' }}">
+                        {{ config('app.simulation') ? 'warning' : 'security' }}
+                    </span>
+                    {{ config('app.simulation') ? 'Status Mode Simulasi' : 'Status Keamanan Sistem' }}
                 </div>
-                <span class="security-badge active">
-                    <span class="dot"></span>
-                    SECURE
+                <span class="security-badge {{ config('app.simulation') ? '' : 'active' }}" style="{{ config('app.simulation') ? 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);' : '' }}">
+                    <span class="dot" style="{{ config('app.simulation') ? 'background: #ef4444;' : '' }}"></span>
+                    {{ config('app.simulation') ? 'UNENCRYPTED' : 'SECURE' }}
                 </span>
             </div>
             <div class="card-body">
@@ -166,41 +168,41 @@
 
                     <div class="security-status-item">
                         <div class="status-icon">
-                            <span class="material-symbols-outlined">vpn_key</span>
+                            <span class="material-symbols-outlined" style="{{ config('app.simulation') ? 'color: #f59e0b;' : '' }}">vpn_key</span>
                         </div>
                         <div>
-                            <div class="status-label">Argon2id</div>
-                            <div class="status-sub">● Active</div>
+                            <div class="status-label">{{ config('app.simulation') ? 'Bcrypt' : 'Argon2id' }}</div>
+                            <div class="status-sub" style="{{ config('app.simulation') ? 'color: #f59e0b;' : '' }}">● {{ config('app.simulation') ? 'Active (Sim)' : 'Active' }}</div>
                         </div>
                     </div>
 
                     <div class="security-status-item">
                         <div class="status-icon">
-                            <span class="material-symbols-outlined">enhanced_encryption</span>
+                            <span class="material-symbols-outlined" style="{{ config('app.simulation') ? 'color: #ef4444;' : '' }}">{{ config('app.simulation') ? 'no_encryption' : 'enhanced_encryption' }}</span>
                         </div>
                         <div>
-                            <div class="status-label">AES-256-GCM</div>
-                            <div class="status-sub">● Active</div>
+                            <div class="status-label">{{ config('app.simulation') ? 'Plaintext' : 'AES-256-GCM' }}</div>
+                            <div class="status-sub" style="{{ config('app.simulation') ? 'color: #ef4444;' : '' }}">● {{ config('app.simulation') ? 'Inactive' : 'Active' }}</div>
                         </div>
                     </div>
 
                     <div class="security-status-item">
                         <div class="status-icon">
-                            <span class="material-symbols-outlined">shield</span>
+                            <span class="material-symbols-outlined" style="{{ config('app.simulation') ? 'color: #f59e0b;' : '' }}">shield</span>
                         </div>
                         <div>
                             <div class="status-label">Session</div>
-                            <div class="status-sub">● Protected</div>
+                            <div class="status-sub" style="{{ config('app.simulation') ? 'color: #f59e0b;' : '' }}">● {{ config('app.simulation') ? 'Isolated (sim_)' : 'Protected' }}</div>
                         </div>
                     </div>
 
                     <div class="security-status-item">
                         <div class="status-icon">
-                            <span class="material-symbols-outlined">storage</span>
+                            <span class="material-symbols-outlined" style="{{ config('app.simulation') ? 'color: #f59e0b;' : '' }}">storage</span>
                         </div>
                         <div>
                             <div class="status-label">Database</div>
-                            <div class="status-sub">● Protected</div>
+                            <div class="status-sub" style="{{ config('app.simulation') ? 'color: #f59e0b;' : '' }}">● {{ config('app.simulation') ? 'sim_* tables' : 'Protected' }}</div>
                         </div>
                     </div>
 
@@ -229,8 +231,12 @@
                 <div class="alert alert-security" style="margin-bottom:0;">
                     <span class="material-symbols-outlined">shield</span>
                     <div>
-                        <div style="font-size:12px;font-weight:600;margin-bottom:2px;">Data Terenkripsi</div>
-                        <div style="font-size:11px;">Seluruh data akademik Anda disimpan dalam format terenkripsi AES-256-GCM di database.</div>
+                        <div style="font-size:12px;font-weight:600;margin-bottom:2px;">
+                            {{ config('app.simulation') ? 'Data Tidak Terenkripsi (Plaintext)' : 'Data Terenkripsi' }}
+                        </div>
+                        <div style="font-size:11px;">
+                            {{ config('app.simulation') ? 'Seluruh data akademik Anda pada mode ini disimpan dalam format plaintext (tanpa enkripsi) di dalam tabel terpisah.' : 'Seluruh data akademik Anda disimpan dalam format terenkripsi AES-256-GCM di database.' }}
+                        </div>
                     </div>
                 </div>
             </div>

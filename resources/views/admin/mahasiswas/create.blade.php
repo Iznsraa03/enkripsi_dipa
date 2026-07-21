@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.mahasiswas.store') }}" method="POST">
+        <form action="{{ sim_route('admin.mahasiswas.store') }}" method="POST">
             @csrf
 
             <h5 class="mb-3" style="font-size:15px; font-weight:700; color:var(--color-primary-deepdark); border-bottom:1px solid var(--color-border); padding-bottom:8px;">1. Informasi Akun (User)</h5>
@@ -71,9 +71,16 @@
 
             <div class="grid grid-3 gap-3 mb-4">
                 <div class="form-group mb-0">
-                    <label for="program_studi" class="form-label">Program Studi</label>
-                    <input type="text" name="program_studi" id="program_studi" class="form-control @error('program_studi') is-invalid @enderror" value="{{ old('program_studi') }}" required>
-                    @error('program_studi') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
+                    <label for="jurusan_id" class="form-label">Program Studi</label>
+                    <select name="jurusan_id" id="jurusan_id" class="form-control @error('jurusan_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Jurusan --</option>
+                        @foreach($jurusans as $jurusan)
+                            <option value="{{ $jurusan->id }}" {{ old('jurusan_id') == $jurusan->id ? 'selected' : '' }}>
+                                {{ $jurusan->nama_jurusan }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('jurusan_id') <div class="text-danger mt-1" style="font-size:12px;">{{ $message }}</div> @enderror
                 </div>
                 <div class="form-group mb-0">
                     <label for="semester" class="form-label">Semester Aktif</label>
@@ -89,7 +96,7 @@
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Mahasiswa</button>
-                <a href="{{ route('admin.mahasiswas.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ sim_route('admin.mahasiswas.index') }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>
